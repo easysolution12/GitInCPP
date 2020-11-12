@@ -5,11 +5,13 @@ class Commit
 {
 private:
     string message;
-
+    vector<string> filesInCommit; //holds files reated to a commit
 public:
     //constructor
     Commit(string);
     string getMessage();
+    void pushFilesCommitted(vector<string> &);
+    void showFiles();
 };
 
 class Branch
@@ -22,9 +24,11 @@ private:
 public:
     //constructor
     Branch(string);
-    void addCommit();
+    void addCommit(vector<string> &);
     string getName();
     void printCommits();
+    void showFiles(string);
+    vector<Commit> &getCommits();
 };
 
 //A Git repo represents a project
@@ -39,10 +43,14 @@ protected:
 public:
     //to print the log of commits
     void log();
-    //adds new branches
+    //shift to new branch
     void checkout(string branch_name);
+    //creates a new branch
+    void checkout_b(string branch_name);
+    //makes master branch(if not)
     void makeMasterBranch();
-    void getBranch();
+    Branch getBranch();
+    void merge(string branch_name);
 };
 
 //Directory class holds files(represented by strings)
@@ -54,6 +62,7 @@ protected:
 public:
     void addFile(string name);
     void listFiles();
+    bool isEmpty();
 };
 
 //Represents staging area used to track non-commited files
@@ -80,4 +89,5 @@ public:
     Repository();
     void viewFilesInRepos();
     void addFilesToCommit();
+    Repository& copyStagingToRepo();
 };
