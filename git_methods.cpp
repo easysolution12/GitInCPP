@@ -4,7 +4,7 @@ Commit::Commit(string message)
 {
     this->message = message;
 }
-
+/*
 void Commit::showFiles()
 {
     cout << "\nFiles in this branch are: ";
@@ -26,7 +26,7 @@ void Branch::showFiles(string message)
         }
     }
 }
-
+*/
 string Commit::getMessage()
 {
     return message;
@@ -36,13 +36,14 @@ void Commit::pushFilesCommitted(vector<string> &filesCommited)
 {
     for (int i = 0; i < filesCommited.size(); i++)
     {
-        filesInCommit.emplace_back(filesInCommit[i]);
+        filesInCommit.push_back(filesCommited[i]);
     }
 }
+/*
 vector<Commit> &Branch::getCommits()
 {
     return commits;
-}
+}*/
 Branch::Branch(string branchName)
 {
     this->branchName = branchName;
@@ -52,10 +53,10 @@ void Branch::addCommit(vector<string> &filesCommited)
 {
     cout << "\nEnter commit message: ";
     string message;
-    cin >> message;
+    getline(cin,message);
     Commit commit(message);
     commit.pushFilesCommitted(filesCommited);
-    commits.emplace_back(commit);
+    commits.push_back(commit);
 }
 
 string Branch::getName()
@@ -75,11 +76,11 @@ void Project::log()
 {
     for (int i = 0; i < branches.size(); i++)
     {
-        cout << "Commits in branch " << branches[i].getName() << "/n";
+        cout << "Commits in branch " << branches[i].getName() << "\n";
         branches[i].printCommits();
         cout << endl;
     }
-}
+}/*
 //git merge branch_name
 void Project ::merge(string branch_name)
 {
@@ -96,7 +97,7 @@ void Project ::merge(string branch_name)
             }
             for (int k = j; k < mergeCommits.size(); k++)
             {
-                currBranchCommits.emplace_back(mergeCommits[k]);
+                currBranchCommits.push_back(mergeCommits[k]);
             }
         }
         else
@@ -104,28 +105,35 @@ void Project ::merge(string branch_name)
             cout << branch_name << " does not exist" << endl;
         }
     }
-}
+}*/
+
 void Project::makeMasterBranch()
 {
     if (branches.size() == 0)
     {
-        Branch b1("Master");
-        branches.emplace_back(b1);
-        curr_branch = "Master";
+        Branch b1("master");
+        branches.push_back(b1);
+        curr_branch = "master";
     }
 }
+
 
 Branch Project ::getBranch()
 {
     cout << "Your current working branch is " << curr_branch << endl;
-    for (int i = 0; i < branches.size(); i++)
+    int i;
+    for (i = 0; i < branches.size(); i++)
     {
         if (branches[i].getName() == curr_branch)
         {
             return branches[i];
         }
     }
-    return;
+    return branches[i-1];
+}
+string Project::getCurrBranch()
+{
+    return curr_branch;
 }
 
 void Project ::checkout(string branch_name)
@@ -159,14 +167,19 @@ void Project::checkout_b(string branch_name)
         }
     }
     Branch b1(branch_name);
-    branches.emplace_back(b1);
+    branches.push_back(b1);
     cout << "\nCreated a new branch " << branch_name << " and shifted.";
     curr_branch = branch_name;
 }
 
+vector<Branch> &Project ::getBranches()
+{
+    return branches;
+}
+
 void Directory::addFile(string fileName)
 {
-    files.emplace_back(fileName);
+    files.push_back(fileName);
 }
 
 void Directory::listFiles()
@@ -181,77 +194,103 @@ void Directory::listFiles()
 
 bool Directory ::isEmpty()
 {
-    if (files.size())
+    if (files.size() == 0)
         return true;
     return false;
 }
-//constructor
-StagingArea::StagingArea()
+vector<string> &Directory ::getFiles()
 {
-    for (int i = 0; i < files.size(); i++)
-    {
-        track.emplace_back(false);
-    }
-    for (auto i = track.begin(); i != track.end(); i++)
-    {
-        cout << *i << " ";
-    }
+    return files;
 }
-void StagingArea::viewTrackedFiles()
+
+void StagingArea::copyToTrack(Directory &d)
 {
+    vector<string> s = d.getFiles();
+    int i;
+    for (int i = 0; i < s.size(); i++)
+    {
+        track.push_back(false);
+    }   
+}
+
+vector<bool> &StagingArea ::getTrack()
+{
+    return track;
+}
+
+void StagingArea::viewTrackedFiles(Directory &d)
+{
+    vector<string> s = d.getFiles();
+    int i;
     cout << "\nFollowing files added to staging area:";
-    for (int i = 0; i < track.size(); i++)
+    for (i = 0; i < track.size(); i++)
     {
         if (track[i])
         {
             cout << "\n"
-                 << files[i];
+                 << s[i];
         }
     }
 }
-void StagingArea::viewUntrackedFiles()
+void StagingArea::viewUntrackedFiles(Directory &d)
 {
+    vector<string> s = d.getFiles();
+    int i;
     cout << "\nFollowing files not added to staging area:";
-    for (int i = 0; i < track.size(); i++)
+    for (i = 0; i < track.size(); i++)
     {
-        if (!track[i])
+       if (!track[i])
         {
             cout << "\n"
-                 << files[i];
+                 << s[i];
         }
-    }
-}
-void StagingArea ::addFilesToStagingArea(string file_name)
-{
-    auto it = find(files.begin(), files.end(), file_name);
-    if (it != files.end())
-    {
-        int index = it - files.begin();
-        track[index] = true;
-        cout << "\nFile successfully added to the staging area";
-    }
-    else
-    {
-        cout << "\nGiven file does not exists!";
     }
 }
 
-Repository& Repository::copyStagingToRepo()
+void StagingArea ::addFilesToStagingArea(string file_name, Directory &d)
 {
+    //cout<<d.files.size();
+    vector<string> s = d.getFiles();
+    int i;
+    if(track.size()==0){
+    copyToTrack(d);
+    }
+    for (i = 0; i < s.size(); i++)
+    {
+
+        if (s[i] == file_name)
+        {
+
+            track[i] = true;
+            cout << "\nFile successfully added to the staging area";
+            return;
+        }
+    }
+
+    if (i == s.size())
+    {
+        cout << "\nGiven file does not exists";
+    }
+}
+
+Repository &Repository::copyStagingToRepo(Directory &d)
+{
+    vector<string> files = d.getFiles();
+    if(committed.size()==0){
     for (int i = 0; i < files.size(); i++)
     {
-        track.emplace_back(false);
+        committed.push_back(false);
     }
-    for (auto i = track.begin(); i != track.end(); i++)
-    {
-        cout << *i << " ";
     }
     return *this;
 }
-void Repository::viewFilesInRepos()
+void Repository::viewFilesInRepos(Directory &d)
+
 {
+    vector<string> files = d.getFiles();
+    int i;
     cout << "\nFollowing files are present in the repository:";
-    for (int i = 0; i < committed.size(); i++)
+    for (i = 0; i < committed.size(); i++)
     {
         if (committed[i])
         {
@@ -261,28 +300,41 @@ void Repository::viewFilesInRepos()
     }
 }
 
-void Repository ::addFilesToCommit()
+void Repository ::addFilesToCommit(Directory &d, Project &p, StagingArea &t)
 {
-    makeMasterBranch();
-    for (int i = 0; i < track.size(); i++)
-    {
-        committed[i] = track[i];
-    }
+    vector<string> files = d.getFiles();
+    int i;
+    vector<bool> &track = t.getTrack();
+    p.makeMasterBranch();
+    vector<Branch>& branches = p.getBranches();
+     
+     for (i = 0; i < track.size(); i++)
+     {
+         committed[i] = track[i];
+     }
     vector<string> filesCommited;
-    for (int i = 0; i < files.size(); i++)
+    for (i = 0; i < files.size(); i++)
     {
 
         if (committed[i])
         {
-            cout << "\n"
-                 << files[i];
+            filesCommited.push_back(files[i]);
         }
-        filesCommited.emplace_back(files[i]);
+        
     }
-    auto i = find(branches.begin(), branches.end(), curr_branch);
-    if (i != branches.end())
+
+    for (i = 0; i < branches.size(); i++)
     {
-        int index = i - branches.begin();
-        branches[index].addCommit(filesCommited);
+       
+        if (branches[i].getName() == p.getCurrBranch())
+        {
+
+            branches[i].addCommit(filesCommited);
+            break;
+        }
+    }
+    if (i == branches.size())
+    {
+        cout << "\nThe given branch does not exists";
     }
 }

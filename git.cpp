@@ -5,7 +5,7 @@ class Commit
 {
 private:
     string message;
-    vector<string> filesInCommit; //holds files reated to a commit
+    vector<string> filesInCommit; //holds files related to a commit
 public:
     //constructor
     Commit(string);
@@ -51,6 +51,8 @@ public:
     void makeMasterBranch();
     Branch getBranch();
     void merge(string branch_name);
+    vector<Branch> & getBranches();
+    string getCurrBranch();
 };
 
 //Directory class holds files(represented by strings)
@@ -63,6 +65,7 @@ public:
     void addFile(string name);
     void listFiles();
     bool isEmpty();
+    vector<string> &getFiles();
 };
 
 //Represents staging area used to track non-commited files
@@ -72,11 +75,12 @@ protected:
     //files in staging area
     vector<bool> track; //boolean vector signifies which file is being tracked
 public:
-    //constructor
-    StagingArea();
-    void viewTrackedFiles();
-    void viewUntrackedFiles();
-    void addFilesToStagingArea(string);
+
+    void viewTrackedFiles(Directory&);
+    void viewUntrackedFiles(Directory&);
+    void addFilesToStagingArea(string, Directory &);
+    void copyToTrack(Directory &);
+    vector<bool> & getTrack();
 };
 
 class Repository : public StagingArea, public Project
@@ -85,9 +89,7 @@ private:
     //files already committed
     vector<bool> committed; //boolean vector signifies which file is being committed
 public:
-    //constructor
-    Repository();
-    void viewFilesInRepos();
-    void addFilesToCommit();
-    Repository& copyStagingToRepo();
+    void viewFilesInRepos(Directory&);
+    void addFilesToCommit(Directory&,Project&,StagingArea&);
+    Repository &copyStagingToRepo(Directory&);
 };

@@ -23,7 +23,7 @@ int main()
     {
 
         cout << "\nEnter a command: ";
-        cin >> command;
+        getline(cin, command);
         if (command == "git init")
         {
             flag = 1;
@@ -31,7 +31,7 @@ int main()
         }
         if (flag)
         {
-            if (command.substr(0, 6) == "git add")
+            if (command == "git add")
             {
 
                 if (directory.isEmpty())
@@ -56,7 +56,7 @@ int main()
                         cout << "\nEnter file to be added to the staging area: ";
                         string fileName;
                         cin >> fileName;
-                        stagingArea.addFilesToStagingArea(fileName);
+                        stagingArea.addFilesToStagingArea(fileName, directory);
                         cout << "\nEnter 1 to add more files to staging area?";
                         cin >> temp;
                     }
@@ -64,34 +64,37 @@ int main()
             }
             else if (command == "git status")
             {
-                stagingArea.viewTrackedFiles();
-                stagingArea.viewUntrackedFiles();
+                stagingArea.viewTrackedFiles(directory);
+                stagingArea.viewUntrackedFiles(directory);
             }
             else if (command == "git branch")
             {
                 project.getBranch();
             }
+            
             else if (command == "git log")
             {
                 project.log();
             }
-            else if (command.substr(0, 11) == "git checkout")
+            else if (command.substr(0, 15) == "git checkout -b")
+            {
+
+                string branchName = command.substr(16,command.size()-1);
+                project.checkout_b(branchName);
+            }
+            else if (command.substr(0, 12) == "git checkout")
             {
                 string branchName = command.substr(13,command.size()-1);
                 project.checkout(branchName);
             }
-            else if (command.substr(0, 14) == "git checkout -b")
-            {
-                string branchName = command.substr(16,command.size()-1);
-                project.checkout_b(branchName);
-            }
+            /*
             else if (command.substr(0, 8) == "git merge")
             {
                 project.merge(command.substr(10,command.size()-1));
-            }
-            else if (command.substr(0, 12) == "git commit -m")
+            }*/
+            else if (command == "git commit -m")
             {
-                repository.copyStagingToRepo().addFilesToCommit();
+                repository.copyStagingToRepo(directory).addFilesToCommit(directory,project,stagingArea);
             }
             else
             {
@@ -100,11 +103,11 @@ int main()
         }
         cout << "\nDo you want to continue(y/n)? ";
         cin >> p;
+        getchar();
     }
 
     return 0;
 }
 
 //ToDo:
-//1. Check whether repo is initialised
 //2. git add .
