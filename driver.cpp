@@ -7,11 +7,14 @@ int main()
          << "\n2. git add"
          << "\n3. git status"
          << "\n4. git commit -m "
-         << "\n5.git branch"
-         << "\n6.git checkout -b <branch_name>"
+         << "\n5. git branch"
+         << "\n6. git checkout -b <branch_name>"
          << "\n7. git log"
          << "\n8. git checkout <branch_name>"
-         << "\n9. git merge" << endl;
+         << "\n9. addFilesToDirectory"
+         << "\n10. viewFilesInRepo"
+         << "\n11. git merge"
+         << "\n12. exit" << endl;
 
     char p = 'y';
     string command;
@@ -28,6 +31,7 @@ int main()
         {
             flag = 1;
             cout << "\nEmpty project has been initialised";
+            continue;
         }
         if (flag)
         {
@@ -62,16 +66,34 @@ int main()
                     }
                 }
             }
+            else if (command == "addFilesToDirectory")
+            {
+                cout << "\nEnter how many files to add: ";
+                int t;
+                cin >> t;
+                for (int i = 0; i < t; i++)
+                {
+                    string fileName;
+                    cout << "\nEnter file name: ";
+                    cin >> fileName;
+                    directory.addFile(fileName);
+                }
+            }
             else if (command == "git status")
             {
                 stagingArea.viewTrackedFiles(directory);
                 stagingArea.viewUntrackedFiles(directory);
             }
+            else if (command == "viewFilesInRepo")
+            {
+                repository.viewFilesInRepos(directory);
+            }
             else if (command == "git branch")
             {
-                project.getBranch();
+                cout << "\n"
+                     << project.getCurrBranch();
             }
-            
+
             else if (command == "git log")
             {
                 project.log();
@@ -79,35 +101,34 @@ int main()
             else if (command.substr(0, 15) == "git checkout -b")
             {
 
-                string branchName = command.substr(16,command.size()-1);
+                string branchName = command.substr(16, command.size() - 1);
                 project.checkout_b(branchName);
             }
             else if (command.substr(0, 12) == "git checkout")
             {
-                string branchName = command.substr(13,command.size()-1);
+                string branchName = command.substr(13, command.size() - 1);
                 project.checkout(branchName);
             }
-            /*
-            else if (command.substr(0, 8) == "git merge")
-            {
-                project.merge(command.substr(10,command.size()-1));
-            }*/
+
+            // else if (command.substr(0, 9) == "git merge")
+            // {
+            //     project.merge(command.substr(10,command.size()-1));
+            // }
             else if (command == "git commit -m")
             {
-                repository.copyStagingToRepo(directory).addFilesToCommit(directory,project,stagingArea);
+                repository.copyStagingToRepo(directory).addFilesToCommit(directory, project, stagingArea);
             }
             else
             {
                 cout << "\nInvalid command";
             }
         }
-        cout << "\nDo you want to continue(y/n)? ";
-        cin >> p;
+        if (command == "exit")
+        {
+            break;
+        }
         getchar();
     }
 
     return 0;
 }
-
-//ToDo:
-//2. git add .
