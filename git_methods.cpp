@@ -5,28 +5,6 @@ Commit::Commit(string message)
     this->message = message;
 }
 
-void Commit::showFiles()
-{
-    cout << "\nFiles in this commit are: ";
-    for (int i = 0; i < filesInCommit.size(); i++)
-    {
-        cout << "\n"
-             << filesInCommit[i];
-    }
-}
-
-void Branch::showFiles(string message)
-{
-    for (int i = 0; i < commits.size(); i++)
-    {
-        if (commits[i].getMessage() == message)
-        {
-            commits[i].showFiles();
-            return;
-        }
-    }
-}
-
 string Commit::getMessage()
 {
     return message;
@@ -68,52 +46,25 @@ void Branch::printCommits()
 {
     for (int i = 0; i < commits.size(); i++)
     {
-        cout << commits[i].getMessage() << " ";
+        cout << commits[i].getMessage() << endl;
     }
 }
-int Project::flag = 0;
-int Project::updateAndReturnFlag(){
-    Project::flag = 1;
-    return flag;
-}
+
 void Project::log()
 {
     for (int i = 0; i < branches.size(); i++)
     {
-        cout << "Commits in branch " << branches[i].getName() << "\n";
+        cout << "Commits in branch " << branches[i].getName() << " :\n";
         branches[i].printCommits();
         cout << endl;
     }
 }
-
-//git merge branch_name
-// void Project ::merge(string branch_name)
-// {
-//     vector<Branch> &branches = getBranches();
-//     int i;
-//     for (i = 0; i < branches.size(); i++)
-//     {
-//         if (branches[i].getName() == branch_name)
-//         {
-//             vector<Commit> &mergeCommits = branches[i].getCommits();
-//             vector<Commit> &currBranchCommits = getBranch().getCommits();
-//             int j;
-//             // for (j = 0; j <= mergeCommits.size() -1 && j <= currBranchCommits.size()-1; j++)
-//             // {
-//             //     currBranchCommits[j] = mergeCommits[j];
-//             // }
-//             for (int k = 0; k < mergeCommits.size(); k++)
-//             {
-//                 currBranchCommits.push_back(mergeCommits[k]);
-//             }
-//             break;
-//         }
-//     }
-//     if (i == branches.size())
-//     {
-//         cout << branch_name << " does not exist" << endl;
-//     }
-// }
+//friend function(of project class)
+ostream &operator<<(ostream &dout, Project &p)
+{
+    p.log();
+    return dout;
+}
 
 void Project::makeMasterBranch()
 {
@@ -127,6 +78,7 @@ void Project::makeMasterBranch()
 
 Branch Project ::getBranch()
 {
+    cout << "Your current working branch is " << curr_branch << endl;
     int i;
     for (i = 0; i < branches.size(); i++)
     {
@@ -172,8 +124,9 @@ void Project::checkout_b(string branch_name)
             return;
         }
     }
-    Branch b1(branch_name);
-    branches.push_back(b1);
+    //Branch b1(branch_name);
+    Branch *b1 = new Branch(branch_name);
+    branches.push_back(*b1);
     cout << "\nCreated a new branch " << branch_name << " and shifted.";
     curr_branch = branch_name;
 }
@@ -181,6 +134,9 @@ void Project::checkout_b(string branch_name)
 vector<Branch> &Project ::getBranches()
 {
     return branches;
+}
+Project ::~Project()
+{
 }
 
 void Directory::addFile(string fileName)
@@ -344,4 +300,31 @@ void Repository ::addFilesToCommit(Directory &d, Project &p, StagingArea &t)
     {
         cout << "\nThe given branch does not exists";
     }
+}
+//All copy constructors
+/*Commit ::Commit(Commit& c){
+message=c.message;
+filesInCommit=c.filesInCommit;
+}
+Branch ::Branch(Branch& c){
+commits=c.commits;
+branchName=c.branchName;
+}*/
+Project ::Project(Project &c)
+{
+    cout << "Cloned repo" << endl;
+    branches = c.branches;
+    curr_branch = c.curr_branch;
+}
+Repository::Repository(Repository &c)
+{
+    committed = c.committed;
+}
+Directory::Directory(Directory &c)
+{
+    files = c.files;
+}
+StagingArea::StagingArea(StagingArea &c)
+{
+    track = c.track;
 }

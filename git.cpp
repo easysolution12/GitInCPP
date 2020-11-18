@@ -11,7 +11,6 @@ public:
     Commit(string);
     string getMessage();
     void pushFilesCommitted(vector<string> &);
-    void showFiles();
 };
 
 class Branch
@@ -25,9 +24,9 @@ public:
     //constructor
     Branch(string);
     void addCommit(vector<string> &);
+    //void addCommit2(vector<Commit> & v);
     string getName();
     void printCommits();
-    void showFiles(string);
     vector<Commit> &getCommits();
 };
 
@@ -37,12 +36,14 @@ class Project
 protected:
     //vector holds different branches in the project
     vector<Branch> branches;
-    static int flag;
+
     string curr_branch;
 
 public:
-    
-    static int updateAndReturnFlag();
+    //default constructor
+    Project()
+    {
+    }
     //to print the log of commits
     void log();
     //shift to new branch
@@ -53,8 +54,14 @@ public:
     void makeMasterBranch();
     Branch getBranch();
     void merge(string branch_name);
-    vector<Branch> & getBranches();
-    inline string getCurrBranch();
+    vector<Branch> &getBranches();
+    string getCurrBranch();
+    //copy constructor
+    Project(Project &);
+    //overloading insertion operator to simulate git log(using friend function)
+    friend ostream &operator<<(ostream &dout, Project &p);
+    //destructor
+    ~Project();
 };
 
 //Directory class holds files(represented by strings)
@@ -64,10 +71,16 @@ protected:
     //files in directory
     vector<string> files; // A name identifies a unique file
 public:
+    //default constructor
+    Directory()
+    {
+    }
     void addFile(string name);
     void listFiles();
     bool isEmpty();
     vector<string> &getFiles();
+    //copy constructor
+    Directory(Directory &);
 };
 
 //Represents staging area used to track non-commited files
@@ -77,12 +90,18 @@ protected:
     //files in staging area
     vector<bool> track; //boolean vector signifies which file is being tracked
 public:
+    //default constructor
+    StagingArea()
+    {
+    }
 
-    void viewTrackedFiles(Directory&);
-    void viewUntrackedFiles(Directory&);
+    void viewTrackedFiles(Directory &);
+    void viewUntrackedFiles(Directory &);
     void addFilesToStagingArea(string, Directory &);
     void copyToTrack(Directory &);
-    vector<bool> & getTrack();
+    vector<bool> &getTrack();
+    //copy constructor
+    StagingArea(StagingArea &);
 };
 
 class Repository : public StagingArea, public Project
@@ -91,7 +110,13 @@ private:
     //files already committed
     vector<bool> committed; //boolean vector signifies which file is being committed
 public:
-    void viewFilesInRepos(Directory&);
-    void addFilesToCommit(Directory&,Project&,StagingArea&);
-    Repository &copyStagingToRepo(Directory&);
+    //default constructor
+    Repository()
+    {
+    }
+    void viewFilesInRepos(Directory &);
+    void addFilesToCommit(Directory &, Project &, StagingArea &);
+    Repository &copyStagingToRepo(Directory &);
+    //copy constructor
+    Repository(Repository &);
 };
