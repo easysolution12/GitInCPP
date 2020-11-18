@@ -37,10 +37,12 @@ class Project
 protected:
     //vector holds different branches in the project
     vector<Branch> branches;
-
+    static int flag;
     string curr_branch;
 
 public:
+    
+    static int updateAndReturnFlag();
     //to print the log of commits
     void log();
     //shift to new branch
@@ -52,7 +54,7 @@ public:
     Branch getBranch();
     void merge(string branch_name);
     vector<Branch> & getBranches();
-    string getCurrBranch();
+    inline string getCurrBranch();
 };
 
 //Directory class holds files(represented by strings)

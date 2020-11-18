@@ -1,7 +1,6 @@
 #include "git_methods.cpp"
 int main()
 {
-    int flag = 0;
     cout << "\nCommands menu: "
          << "\n1. git init"
          << "\n2. git add"
@@ -22,6 +21,7 @@ int main()
     StagingArea stagingArea;
     Directory directory;
     Repository repository;
+    int flag = 0;
     while (p == 'y')
     {
 
@@ -29,7 +29,7 @@ int main()
         getline(cin, command);
         if (command == "git init")
         {
-            flag = 1;
+            flag = Project::updateAndReturnFlag();
             cout << "\nEmpty project has been initialised";
             continue;
         }
@@ -112,7 +112,7 @@ int main()
 
             // else if (command.substr(0, 9) == "git merge")
             // {
-            //     project.merge(command.substr(10,command.size()-1));
+            //     project.merge(command.substr(10, command.size() - 1));
             // }
             else if (command == "git commit -m")
             {

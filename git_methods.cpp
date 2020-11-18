@@ -71,7 +71,11 @@ void Branch::printCommits()
         cout << commits[i].getMessage() << " ";
     }
 }
-
+int Project::flag = 0;
+int Project::updateAndReturnFlag(){
+    Project::flag = 1;
+    return flag;
+}
 void Project::log()
 {
     for (int i = 0; i < branches.size(); i++)
